@@ -1,8 +1,20 @@
-FROM debian:stretch
+FROM nginx:1.15
 
-COPY start.sh /start.sh
+COPY ./conf/nginx.conf /etc/nginx/nginx.conf
 
-RUN chmod 755 /start.sh
+RUN apt-get update
+RUN apt-get -y install curl
+
+RUN mkdir /var/www && chmod -R g+w /var/www \
+  && chmod g+rwx /var/cache/nginx /var/run /var/log \
+  && chmod 0660 /etc/nginx/nginx.conf \
+  && touch /var/log/nginx/error.app.log && chmod 0660 /var/log/nginx/error.app.log \
+  && chgrp -R root /var/cache/nginx \
+  && chown -R nginx:nginx /var/www /var/run
+
+COPY start.sh /usr/local/bin/start.sh
+
+RUN chmod 0760 /usr/local/bin/start.sh
 
 RUN apt-get update && \
         apt-get install -y apt-transport-https ca-certificates curl software-properties-common gnupg2
