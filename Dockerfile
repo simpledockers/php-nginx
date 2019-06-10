@@ -10,7 +10,8 @@ RUN mkdir /var/www && chmod -R g+w /var/www \
   && chmod 0660 /etc/nginx/nginx.conf \
   && touch /var/log/nginx/error.app.log && chmod 0660 /var/log/nginx/error.app.log \
   && chgrp -R root /var/cache/nginx \
-  && chown -R nginx:nginx /var/www /var/run
+  && chown -R nginx:nginx /var/www /var/run \
+  && sed -i -e '/listen/!b' -e '/80;/!b' -e 's/80;/8080;/' /etc/nginx/conf.d/default.conf
 
 COPY start.sh /usr/local/bin/start.sh
 
@@ -27,5 +28,5 @@ RUN apt-get update && apt-get install -y php7.2-common php7.2-cli
 
 RUN apt-get install -y nginx
 
-EXPOSE 80
+EXPOSE 8080
 CMD ["nginx", "-g", "daemon off;"]
